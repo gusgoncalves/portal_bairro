@@ -1,0 +1,23 @@
+{
+    "anunciantes": 3,
+    "anuncios": 3,
+    "assinaturas": 2,
+    "avaliacoes": 0,
+    "cobrancas": 5,
+    "convites_avaliacao": 1,
+    "eventos_clique": 4,
+    "fila_emails": 5,
+    "horarios_atendimento": 6,
+    "imagens_anuncios": 7,
+    "imagens_revisoes": 13,
+    "organizacoes": 2,
+    "pagamentos": 5,
+    "periodos_publicacao": 3,
+    "portais": 2,
+    "registros_auditoria": 33,
+    "revisoes_anuncios": 5,
+    "tentativas_login": 3,
+    "tokens_acesso": 4,
+    "usuarios": 6,
+    "usuarios_portais": 5
+}

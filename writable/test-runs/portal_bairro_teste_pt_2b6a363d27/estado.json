@@ -1,0 +1,183 @@
+{
+    "situacao": "pendente",
+    "banco": "portal_bairro_teste_pt_2b6a363d27",
+    "backup": "D:\\Projeto\\Portal do Bairro\/writable\/test-runs\/portal_bairro_teste_pt_2b6a363d27\/backup-20261026-035735-f7cd07.sql",
+    "contagens": {
+        "organizations": 1,
+        "portals": 1,
+        "advertisers": 1,
+        "users": 1,
+        "memberships": 1,
+        "publications": 1,
+        "publication_images": 0,
+        "audit_logs": 0,
+        "login_attempts": 0,
+        "charges": 0,
+        "publication_revisions": 1,
+        "revision_images": 1
+    },
+    "chaves": [
+        {
+            "tabela": "charges",
+            "restricao": "charges_ibfk_1",
+            "coluna": "portal_id",
+            "referencia": "portals",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "charges",
+            "restricao": "charges_ibfk_2",
+            "coluna": "publication_id",
+            "referencia": "publications",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "memberships",
+            "restricao": "memberships_ibfk_1",
+            "coluna": "user_id",
+            "referencia": "users",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "memberships",
+            "restricao": "memberships_ibfk_2",
+            "coluna": "portal_id",
+            "referencia": "portals",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "portals",
+            "restricao": "portals_ibfk_1",
+            "coluna": "organization_id",
+            "referencia": "organizations",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "publications",
+            "restricao": "publications_ibfk_1",
+            "coluna": "portal_id",
+            "referencia": "portals",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "publications",
+            "restricao": "publications_ibfk_2",
+            "coluna": "advertiser_id",
+            "referencia": "advertisers",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "publication_images",
+            "restricao": "publication_images_ibfk_1",
+            "coluna": "publication_id",
+            "referencia": "publications",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "publication_revisions",
+            "restricao": "publication_revisions_ibfk_1",
+            "coluna": "publication_id",
+            "referencia": "publications",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "publication_revisions",
+            "restricao": "publication_revisions_ibfk_2",
+            "coluna": "author_id",
+            "referencia": "users",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "publication_revisions",
+            "restricao": "publication_revisions_ibfk_3",
+            "coluna": "reviewer_id",
+            "referencia": "users",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "revision_images",
+            "restricao": "revision_images_ibfk_1",
+            "coluna": "revision_id",
+            "referencia": "publication_revisions",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        },
+        {
+            "tabela": "users",
+            "restricao": "users_ibfk_1",
+            "coluna": "advertiser_id",
+            "referencia": "advertisers",
+            "coluna_referenciada": "id",
+            "ordem": 1,
+            "atualizacao": "RESTRICT",
+            "exclusao": "RESTRICT"
+        }
+    ],
+    "verificacoes": [
+        {
+            "tabela": "portals",
+            "restricao": "CONSTRAINT_1",
+            "expressao": "`capacity` in (10,50,100,200)"
+        },
+        {
+            "tabela": "publications",
+            "restricao": "CONSTRAINT_1",
+            "expressao": "`status` in ('pending','published','suspended','archived')"
+        },
+        {
+            "tabela": "publication_images",
+            "restricao": "CONSTRAINT_1",
+            "expressao": "`slot` between 1 and 3"
+        },
+        {
+            "tabela": "publication_revisions",
+            "restricao": "CONSTRAINT_1",
+            "expressao": "`status` in ('pending','approved','rejected')"
+        },
+        {
+            "tabela": "revision_images",
+            "restricao": "CONSTRAINT_1",
+            "expressao": "`slot` between 1 and 3"
+        },
+        {
+            "tabela": "users",
+            "restricao": "CONSTRAINT_1",
+            "expressao": "`role` in ('master','manager','advertiser')"
+        }
+    ]
+}

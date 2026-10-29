@@ -1,0 +1,56 @@
+{
+    "backup": "D:\\Projeto\\Portal do Bairro\\storage\/..\/writable\/backups\/prd-20261028-141901",
+    "contagens": {
+        "anunciantes": 3,
+        "anuncios": 3,
+        "assinaturas": 2,
+        "avaliacoes": 0,
+        "cobrancas": 4,
+        "convites_avaliacao": 0,
+        "eventos_clique": 4,
+        "fila_emails": 3,
+        "imagens_anuncios": 5,
+        "imagens_revisoes": 11,
+        "organizacoes": 2,
+        "pagamentos": 1,
+        "periodos_publicacao": 2,
+        "portais": 2,
+        "registros_auditoria": 19,
+        "revisoes_anuncios": 4,
+        "tentativas_login": 4,
+        "tokens_acesso": 3,
+        "usuarios": 6,
+        "usuarios_portais": 5
+    },
+    "portais": [
+        {
+            "id": 1,
+            "nome": "Vitrine Annecont",
+            "identificador": "annecont",
+            "limite_anuncios": 10
+        },
+        {
+            "id": 2,
+            "nome": "Residencial Bellas",
+            "identificador": "uvaranas",
+            "limite_anuncios": 10
+        }
+    ],
+    "anuncios": [
+        {
+            "id": 2,
+            "nome": "Gustavo Lacoste Maia",
+            "situacao": "published"
+        },
+        {
+            "id": 3,
+            "nome": "Timelo-rego",
+            "situacao": "published"
+        },
+        {
+            "id": 4,
+            "nome": "fdfdsfsfsdfsdfs",
+            "situacao": "pending"
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+PORTAL DO BAIRRO — VERSÃO PRD
+Base ativa: portal_bairro_prd
+Administrador local: /admin
+Usuário: admin
+Senha inicial: 1234
+Altere antes da exposição pública. Gestores e anunciantes devem ser cadastrados no painel.

@@ -1,10 +1,11 @@
 /vendor/
-/writable/*
+#writable/*
 !/writable/.htaccess
 !/writable/index.html
 *.log
-
+#/.env
 /artes/
+#/storege/
 /builds
 /public/assets/demo/
 *.pem
