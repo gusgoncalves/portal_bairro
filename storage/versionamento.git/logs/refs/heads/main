@@ -1,0 +1,7 @@
+0000000000000000000000000000000000000000 fc3f510f81c97d4efdd0bb2bf752d19bbe8d4d2a Gustavo Gonçalves <gustavo.pascoal@gmail.com> 1793195070 -0300	commit (initial): Implementa portal com acesso por perfil, horarios padronizados e gestao isolada
+fc3f510f81c97d4efdd0bb2bf752d19bbe8d4d2a fa3892baeecf3384ed44ae51cc1cc7d27654f134 Gustavo Gonçalves <gustavo.pascoal@gmail.com> 1793195187 -0300	commit: Documenta estrutura operacional e normaliza arquivos de texto
+fa3892baeecf3384ed44ae51cc1cc7d27654f134 0daf0e912a5c35fc5576bd150f972826c1fe8879 Gustavo Gonçalves <gustavo.pascoal@gmail.com> 1793195470 -0300	commit: Mantem navegacao ativa em revisoes, edicao e minha conta
+0daf0e912a5c35fc5576bd150f972826c1fe8879 f64ca86eb275c6625a8540da85e652a33c8023a4 Gustavo Gonçalves <gustavo.pascoal@gmail.com> 1793195724 -0300	commit: Preserva bloqueios legados ao migrar acessos por vitrine
+f64ca86eb275c6625a8540da85e652a33c8023a4 10df3539a0aef59f895a0c643ac77a1fb67078b6 Gustavo Gonçalves <gustavo.pascoal@gmail.com> 1793243478 -0300	commit: Ajusta acesso por vitrine em subpasta e prepara emails HostGator
+10df3539a0aef59f895a0c643ac77a1fb67078b6 5a6cd248cc635b4cd4720bfddddfbe22568d17ab Gustavo Gonçalves <gustavo.pascoal@gmail.com> 1793248100 -0300	commit: Adiciona edicao administrativa, datas pt-BR e graficos de contatos
+5a6cd248cc635b4cd4720bfddddfbe22568d17ab 0d2dd273ca64713e8c654daadedc1e010b52b505 Gustavo Gonçalves <gustavo.pascoal@gmail.com> 1793280549 -0300	commit: Organiza projeto e adiciona configuracao SMTP pelo master

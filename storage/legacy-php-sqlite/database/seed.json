@@ -1,0 +1,172 @@
+[
+  {
+    "id": 1,
+    "name": "João · Reparos & Soluções",
+    "category": "reformas",
+    "service": "Elétrica e pequenos reparos",
+    "description": "Uma mão experiente para os reparos e cuidados da sua casa.",
+    "tags": "eletricista tomada manutenção lâmpada eletrica",
+    "color": "#d6dfce",
+    "accent": "#64846c",
+    "type": "home",
+    "mode": "A domicílio",
+    "hours": "Segunda a sexta, das 8h às 18h",
+    "status": "published",
+    "services": [
+      "Instalação de luminárias",
+      "Troca de tomadas e interruptores",
+      "Pequenos reparos residenciais"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Ateliê da Ana",
+    "category": "beleza",
+    "service": "Manicure e pedicure",
+    "description": "Cuidado, delicadeza e um momento só seu, pertinho de casa.",
+    "tags": "unha esmalte manicure pedicure beleza",
+    "color": "#ead4ca",
+    "accent": "#b37a69",
+    "type": "beauty",
+    "mode": "Em estabelecimento",
+    "hours": "Terça a sábado, das 9h às 18h",
+    "status": "published",
+    "services": [
+      "Manicure e pedicure",
+      "Esmaltação",
+      "Cuidados com as unhas"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Sabores da Dona Lúcia",
+    "category": "alimentacao",
+    "service": "Comida caseira e encomendas",
+    "description": "Receitas com carinho para o almoço e os encontros em família.",
+    "tags": "cozinheira comida marmita bolo almoço cozinha",
+    "color": "#eeddb9",
+    "accent": "#bb8c45",
+    "type": "food",
+    "mode": "Encomendas e retirada",
+    "hours": "Segunda a sábado, das 8h às 16h",
+    "status": "published",
+    "services": [
+      "Marmitas por encomenda",
+      "Bolos caseiros",
+      "Refeições para pequenos encontros"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Casa Leve com Maria",
+    "category": "limpeza",
+    "service": "Limpeza e organização",
+    "description": "Mais tranquilidade e cuidado com cada cantinho do seu lar.",
+    "tags": "faxineira faxina diarista limpeza organização",
+    "color": "#d0e1df",
+    "accent": "#558c88",
+    "type": "clean",
+    "mode": "A domicílio",
+    "hours": "Segunda a sexta, das 8h às 17h",
+    "status": "published",
+    "services": [
+      "Limpeza residencial",
+      "Organização de ambientes",
+      "Limpeza de manutenção"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Carlos · Hidráulica Local",
+    "category": "reformas",
+    "service": "Encanador residencial",
+    "description": "Atendimento para vazamentos e manutenção hidráulica residencial.",
+    "tags": "encanador vazamento torneira cano hidráulica",
+    "color": "#d6dfe6",
+    "accent": "#6a859d",
+    "type": "home",
+    "mode": "A domicílio",
+    "hours": "Segunda a sábado, das 8h às 18h",
+    "status": "published",
+    "services": [
+      "Reparo de vazamentos",
+      "Troca de torneiras",
+      "Manutenção hidráulica"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Barbearia do Rafa",
+    "category": "beleza",
+    "service": "Cabelo e barba",
+    "description": "Seu corte em dia, com conversa boa e atendimento no bairro.",
+    "tags": "barbeiro cabelo corte barba cabeleireiro",
+    "color": "#d9d7cb",
+    "accent": "#7c7e60",
+    "type": "beauty",
+    "mode": "Em estabelecimento",
+    "hours": "Terça a sábado, das 9h às 19h",
+    "status": "published",
+    "services": [
+      "Corte masculino",
+      "Barba",
+      "Acabamento"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Verde Perto · Jardinagem",
+    "category": "jardim",
+    "service": "Cuidados com jardins",
+    "description": "Um olhar cuidadoso para deixar seu espaço mais verde.",
+    "tags": "jardineiro jardim poda grama plantas",
+    "color": "#dbe4c7",
+    "accent": "#7e9854",
+    "type": "plant",
+    "mode": "A domicílio",
+    "hours": "Segunda a sexta, das 8h às 17h",
+    "status": "published",
+    "services": [
+      "Manutenção de jardins",
+      "Corte de grama",
+      "Cuidados com plantas"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Pedro · Construção e Reforma",
+    "category": "reformas",
+    "service": "Pedreiro e acabamentos",
+    "description": "Do pequeno ajuste à reforma, atenção aos detalhes da sua casa.",
+    "tags": "pedreiro alvenaria piso parede reforma pintura",
+    "color": "#e7d4bf",
+    "accent": "#a77b55",
+    "type": "home",
+    "mode": "A domicílio",
+    "hours": "Segunda a sexta, das 8h às 17h",
+    "status": "published",
+    "services": [
+      "Pequenas reformas",
+      "Assentamento de pisos",
+      "Reparos em alvenaria"
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Doces da Bia",
+    "category": "alimentacao",
+    "service": "Doces e bolos para festas",
+    "description": "Encomendas artesanais para celebrar os momentos especiais.",
+    "tags": "doce festa bolo brigadeiro",
+    "color": "#eddcd7",
+    "accent": "#b7847a",
+    "type": "food",
+    "mode": "Encomendas e retirada",
+    "hours": "Terça a sábado, das 9h às 17h",
+    "status": "pending",
+    "services": [
+      "Bolos",
+      "Doces para festas"
+    ]
+  }
+]

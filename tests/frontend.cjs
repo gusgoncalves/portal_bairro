@@ -1,0 +1,82 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const fixtures=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/anuncios.json'),'utf8')).map(b=>({...b,images:[],whatsapp:'',instagram:'',area:'Vila Esperança',address:'',has_pending:false,revision:null}));
+fixtures[0].whatsapp='5542999999999';fixtures[0].instagram='empresa.local';fixtures[0].images=[1,2,3].map(id=>({id,url:'media/'+id,slot:id,source:'public',caption:'Imagem '+id}));fixtures[0].art='media/1';
+const element=()=>({innerHTML:'',textContent:'',value:'',dataset:{},parentNode:{insertBefore(){}},style:{},hidden:false,addEventListener(){},focus(){},showModal(){this.open=true;},close(){this.open=false;},querySelector(){return element();},querySelectorAll(){return [];}});
+const staticIds=['app','close-notice','notice-ok','notice','notice-title','notice-message','portal-region','company-dialog','photo-dialog','access-dialog'];
+const elements=new Map(staticIds.map(id=>[id,element()]));
+function getElementById(id){if(staticIds.includes(id))return elements.get(id);if(!elements.get('app').innerHTML.includes('id="'+id+'"'))return null;if(!elements.has(id))elements.set(id,element());return elements.get(id);}
+const context={URL,URLSearchParams,FormData,Intl,console,location:{hash:'#/',pathname:'/',search:''},history:{replaceState(){}},localStorage:{getItem(){return '[]';},setItem(){}},document:{addEventListener(){},createElement:()=>element(),querySelector:()=>null,documentElement:{style:{setProperty(){}}},body:{style:{},append(){}},baseURI:'http://localhost:8080/',getElementById,querySelectorAll:()=>[]},window:{addEventListener(){},scrollTo(){}},fetch:async url=>({ok:true,json:async()=>String(url).includes('/session')?{user:null,csrf:'test'}:{portal:{name:'Vila Esperança',capacity:10},publications:fixtures.filter(b=>b.status==='published'),portals:[],users:[],charges:[],events:[],reports:[]}})};
+vm.createContext(context);for(const file of ['app.js','portal.js','prd.js','gestao.js','administracao.js'])vm.runInContext(fs.readFileSync(path.join(root,'public',file),'utf8'),context);
+const run=code=>vm.runInContext(code,context);
+(async()=>{
+ await run('boot()');run('businesses='+JSON.stringify(fixtures));
+ const paths=['/','/servicos','/profissional/1','/gestor','/gestor/anuncios','/gestor/novo','/gestor/editar/1','/gestor/financeiro','/gestor/auditoria','/gestor/revisoes','/gestor/revisar/1','/anunciantes','/anunciantes/editar/1','/admin','/admin/configuracoes','/conta'];
+ for(const role of [null,'manager','advertiser','master']){
+  run('auth.user='+(role?JSON.stringify({id:1,role,email:'teste@portal.local'}):'null'));
+  for(const route of paths){context.location.hash='#'+route;run('render()');assert.ok(elements.get('app').innerHTML.length>50,role+' '+route);}
+ }
+ run('auth.user=null');context.location.hash='#/admin';run('render()');assert.doesNotMatch(elements.get('app').innerHTML,/login-form/);assert.match(elements.get('access-dialog').innerHTML,/access-form/);assert.match(elements.get('access-dialog').innerHTML,/Usuário ou e-mail/);
+ run('auth.user={role:"advertiser",email:"teste@portal.local"}');context.location.hash='#/gestor';run('render()');assert.match(elements.get('app').innerHTML,/Acesso não permitido/);
+ run('openCompany(businesses[0])');const modal=elements.get('company-dialog').innerHTML;assert.match(modal,/https:\/\/wa.me\/5542999999999/);assert.match(modal,/instagram.com\/empresa.local/);assert.match(modal,/noopener noreferrer/);assert.equal((modal.match(/data-open-photo=/g)||[]).length,3);assert.match(modal,/extra-photos/);assert.doesNotMatch(modal,/data-company-photo/);
+ assert.match(run('edit(1)'),/Enviar para aprovação/);assert.match(run('edit(1)'),/company-images/);assert.match(run('edit(1)'),/data-source="public"/);assert.match(run('edit(1)'),/name="whatsapp"/);
+ run('auth.user={role:"master",email:"admin@portal.local"}');run('reviewData='+JSON.stringify({approved:fixtures[0],proposed:{...fixtures[0],name:'Nova proposta',has_pending:true,revision:{id:10,version:2,status:'pending',author:'Empresa',note:null}}}));
+ assert.match(run('reviewPage()'),/Versão pública atual/);assert.match(run('reviewPage()'),/Proposta enviada/);assert.match(run('reviewPage()'),/Aprovar e publicar esta versão/);assert.match(run('table([reviewData.proposed])'),/Revisar proposta/);
+ assert.match(run('card(businesses[0])'),/v-instagram/);assert.doesNotMatch(run('card(businesses[0])'),/Ver detalhes/);
+ assert.match(run('advertiserPanel()'),/Visualizar anúncio/);assert.doesNotMatch(run('advertiserPanel()'),/Ver página pública/);
+ assert.match(run('table(businesses)'),/data-preview="1"/);assert.match(run('table(businesses)'),/catalog-image-list/);
+ assert.match(run('edit(1)'),/Remover imagem/);assert.match(run('edit(1)'),/Usar como capa/);assert.match(run('edit(1)'),/Capa da versão em edição/);
+ assert.equal(run('companyPicture({...businesses[0],art:"foto-errada.jpg",images:[{url:"segunda.jpg",slot:2},{url:"primeira.jpg",slot:1}]})'),'primeira.jpg');
+ run('openPhoto("media/2","Fachada")');assert.match(elements.get('photo-dialog').innerHTML,/media\/2/);assert.equal(elements.get('photo-dialog').open,true);assert.equal(elements.get('company-dialog').open,true);
+ const valid={name:'Empresa',service:'Serviço',description:'Descrição',hours:'8h',whatsapp:'5542999999999',instagram:'@empresa.local',services:'Serviço 1'};
+ context.formValues=valid;
+ assert.equal(run('Object.keys(catalogueErrors(formValues)).length'),0);
+ assert.equal(run('Object.keys(catalogueErrors({...formValues,whatsapp:"123"}))[0]'),'whatsapp');
+ assert.equal(run('Object.keys(catalogueErrors({...formValues,instagram:"https://outro.exemplo/"}))[0]'),'instagram');
+ assert.equal(run('Object.keys(catalogueErrors(formValues,[{size:20,type:"image/jpeg"}],3))[0]'),'images');
+ // Prova de que o erro é escrito ao lado do campo e recebe foco, não no rodapé.
+ const attrs={};const control={setAttribute(k,v){attrs[k]=v;},getAttribute(k){return attrs[k]||'';},insertAdjacentElement(where,node){elements.set(node.id,node);},setCustomValidity(v){this.error=v;},focus(){this.focused=true;},scrollIntoView(){}};
+ const summary={textContent:'erro antigo'};
+ context.document.createElement=()=>({setAttribute(){},textContent:'',hidden:false});
+ context.inlineForm={id:'edit-form',elements:{namedItem:key=>key==='whatsapp'?control:null},querySelector:()=>summary};
+ run('showFieldErrors(inlineForm,{whatsapp:"Confira seu número"})');
+ assert.equal(elements.get('edit-form-error-whatsapp').textContent,'Confira seu número');assert.equal(control.focused,true);assert.equal(attrs['aria-invalid'],'true');assert.equal(summary.textContent,'');
+ assert.doesNotMatch(run('home()'),/Área do gestor|hero-art/);
+ assert.match(run('onboarding()'),/Cadastrar e liberar acesso/);
+ assert.match(run('tokenPage("avaliar","abc")'),/rating-form/);
+ assert.match(run('commercialPanel()'),/Mensalidade e período/);
+ assert.match(run('card(businesses[0])'),/data-favorite/);
+ assert.equal(run('automaticText("#ffffff")'),'#000000');
+ run('auth.user={id:1,name:"Gestor",role:"manager"}');context.location.hash='#/gestor/financeiro';assert.match(run('dashboardNav()'),/href="#\/gestor\/financeiro" class="active"/);assert.doesNotMatch(run('dashboardNav()'),/Auditoria/);assert.match(run('dashboardNav()'),/Novo anunciante/);
+ run('prdReports=[{whatsapp:3,instagram:2}]');assert.equal(run('totals()'),5);assert.match(run('dashboard()'),/id="contact-total">5/);assert.match(run('edit(1)'),/<select name="hours"/);context.location.hash='#/gestor/revisar/1';assert.match(run('dashboardNav()'),/href="#\/gestor\/revisoes" class="active"/);context.location.hash='#/conta';assert.match(run('accountPage()'),/href="#\/conta" class="active"/);
+ context.location.hash='#/';run('render()');run('publicFilter.query="encanador";drawCatalogue()');assert.match(elements.get('catalog-grid').innerHTML,/Carlos/);
+ run('publicFilter.query="astronauta";drawCatalogue()');assert.equal(elements.get('catalog-empty').hidden,false);
+ context.location.hash='';context.location.pathname='/p/outro-bairro';assert.equal(run('currentPath()'),'/');
+ context.document.baseURI='https://annecont.com.br/portal/';context.location.hash='';context.location.pathname='/portal/';assert.equal(run('currentPath()'),'/');
+ context.location.pathname='/portal/admin';assert.equal(run('currentPath()'),'/admin');
+ context.location.pathname='/portal/p/condominio';assert.equal(run('currentPath()'),'/');
+ assert.equal(run('publicPortalUrl("condominio")'),'https://annecont.com.br/portal/?portal=condominio#/');
+ context.location.pathname='/portal/';context.location.hash='#/admin/portais';run('auth.user={id:1,name:"Master",role:"master"}');
+ await run('refresh()');assert.match(elements.get('app').innerHTML,/Novo portal/);assert.doesNotMatch(elements.get('app').innerHTML,/Vitrine em preparação/);
+ context.location.hash='#/';run('auth.user=null');await run('refresh()');assert.match(elements.get('app').innerHTML,/Vitrine em preparação/);
+ const oldFetch=context.fetch;context.fetch=async url=>({ok:true,json:async()=>String(url).includes('/portals')?{portals:[{slug:'mercado',name:'Mercado'}]}:{portal:{name:'Mercado',capacity:10},publications:[]}});
+ run("portalSlug='';");await run('refresh()');assert.equal(run('portalSlug'),'mercado');
+ context.fetch=oldFetch;context.location.hash='#definir-senha?token=abc';await run('refresh()');assert.match(elements.get('app').innerHTML,/token-form/);
+ assert.equal(run('dateBR("2026-10-28")'),'28/10/2026');assert.equal(run('dateBR("2026-11-26")'),'26/11/2026');
+ assert.match(run('dateTimeBR("2026-10-29 02:30:00")'),/28\/10\/2026.*23:30:00/);
+ assert.equal(run('billingState({due_date:"2000-01-01",paid_at:null})'),'billing-overdue');assert.equal(run('billingState({due_date:"2099-01-01",paid_at:null})'),'billing-pending');assert.equal(run('billingState({due_date:"2000-01-01",paid_at:"2026-01-01"})'),'billing-paid');
+ assert.equal(run('auditLabel("catalog.approved")'),'Anúncio aprovado');assert.doesNotMatch(run('how()'),/Ambiente de desenvolvimento|ainda não estão disponíveis/);
+ run('prdReports=[{name:"Loja Exemplo",whatsapp:3,instagram:1},{name:"Sem cliques",whatsapp:0,instagram:0}]');assert.match(run('contactCharts()'),/Loja Exemplo/);assert.match(run('contactCharts()'),/270deg/);assert.match(run('contactCharts()'),/Sem cliques neste período/);
+ run('auth.user={id:1,name:"Master",email:"conta@example.test",role:"master"}');assert.match(run('accountPage()'),/account-form/);assert.match(run('responsibleView([{name:"Responsável",email:"teste@example.test",active:1}])'),/teste@example.test/);
+ run('charges=[{id:1,description:"Pendente",due_date:"2099-01-01",paid_at:null,amount_cents:100},{id:2,description:"Atrasada",due_date:"2000-01-01",paid_at:null,amount_cents:100},{id:3,description:"Paga",due_date:"2000-01-01",paid_at:"2026-01-01",amount_cents:100}]');
+ for(const fn of ['masterBills()','financePage()']){const html=run(fn);assert.match(html,/billing-pending/);assert.match(html,/billing-overdue/);assert.match(html,/billing-paid/);assert.match(html,/01\/01\/2099/);}
+ run('businesses=[{id:1,name:"Empresa Teste",mensalidade_centavos:100,dias_periodo:30,periodo:{inicio_em:"2026-10-28",fim_em:"2026-11-26"}}]');assert.match(run('commercialPanel()'),/28\/10\/2026 a 26\/11\/2026/);
+ run('auth.user={id:1,name:"Gestor",email:"gestor@example.test",role:"manager"}');assert.equal((run('accountPage()').match(/<form /g)||[]).length,1);assert.doesNotMatch(run('accountPage()'),/name="new"[^>]*required/);
+ assert.match(run('heading("Olá, Gestor. Gestão da sua vitrine.","Subtítulo")'),/class="sr-only"/);assert.doesNotMatch(run('masterPanel()'),/>Alterar capacidade</);
+ assert.match(run('financePage()'),/Total a receber/);assert.match(run('financePage()'),/Total recebido/);
+ run('auth.user={id:1,name:"Master",email:"master@example.test",role:"master"};emailSettings={porta:465,seguranca:"ssl",ativo:1}');assert.match(run('emailSettingsPage()'),/smtp-settings-form/);assert.match(run('emailSettingsPage()'),/Enviar e-mail de teste/);
+ const beforeDeliveryFetch=context.fetch;
+ context.fetch=async()=>({ok:true,json:async()=>({email_delivery:{status:'enviado',message:'Enviado ao SMTP'}})});await run('api("/admin/email-test",{method:"POST",body:"{}"})');assert.equal(elements.get('notice').className,'notice-success');assert.match(elements.get('notice-title').innerHTML,/<svg/);
+ context.fetch=async()=>({ok:true,json:async()=>({email_delivery:{status:'falha',message:'Falha SMTP'}})});await run('api("/admin/email-test",{method:"POST",body:"{}"})');assert.equal(elements.get('notice').className,'notice-danger');context.fetch=beforeDeliveryFetch;
+ console.log('PASS: 64 renderizações, Instagram, capa consistente, miniaturas, ampliação em popup, prévia unificada e validação no campo.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

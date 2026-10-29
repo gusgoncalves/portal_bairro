@@ -1,0 +1,16 @@
+/vendor/
+/writable/*
+!/writable/.htaccess
+!/writable/index.html
+*.log
+
+/artes/
+/builds
+/public/assets/demo/
+*.pem
+*.p12
+*.pfx
+*.dump
+*.bak
+
+/desenvolvimento/historico/artes/

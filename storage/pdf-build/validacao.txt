@@ -1,0 +1,4 @@
+Paginas: 16
+Conteudo textual completo: OK
+Diagramas: 3
+Bytes: 98762

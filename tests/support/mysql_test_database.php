@@ -1,0 +1,22 @@
+<?php
+$cfg=[];foreach(file(__DIR__.'/../../.env') as $l)if(preg_match('/^\s*([\w.]+)\s*=\s*(.*?)\s*$/',$l,$m))$cfg[$m[1]]=trim($m[2],"\"'");
+$name=$argv[2]??'';if(!preg_match('/^portal_prd_teste_[a-f0-9]{10}$/D',$name))throw new RuntimeException('Nome de teste inválido.');
+$db=new PDO('mysql:host='.($cfg['database.default.hostname']??'127.0.0.1').';charset=utf8mb4',$cfg['database.default.username']??'root',$cfg['database.default.password']??'',[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
+if(($argv[1]??'')==='create')$db->exec("CREATE DATABASE `$name` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");elseif(($argv[1]??'')==='drop')$db->exec("DROP DATABASE `$name`");elseif(($argv[1]??'')==='legacy-access'){
+ $db->exec("USE `$name`");$db->exec("INSERT INTO portais(id,id_organizacao,identificador,nome) VALUES(2,1,'outra-vitrine','Outra vitrine')");$db->exec("INSERT INTO anunciantes(id,nome) VALUES(1,'Empresa legado')");
+ foreach([1,2] as $pid)$db->exec("INSERT INTO anuncios(id_portal,id_anunciante,nome,categoria,servico_principal,descricao,modalidade_atendimento,horario,servicos) VALUES($pid,1,'Empresa legado','reformas','','','Em estabelecimento','','[]')");
+ $db->exec("INSERT INTO usuarios(id,nome,email,senha_hash,perfil,id_anunciante,ativo) VALUES(2,'Legado','legado@example.test','hash-test-only','advertiser',1,0),(3,'Gestor','gestor@example.test','hash-test-only','manager',NULL,1)");
+ $db->exec('INSERT INTO usuarios_portais(id_usuario,id_portal) VALUES(2,1),(2,2),(3,1)');
+}
+elseif(($argv[1]??'')==='legacy-check'){$db->exec("USE `$name`");echo json_encode(['ativo'=>(int)$db->query('SELECT ativo FROM usuarios WHERE id=2')->fetchColumn(),'vinculos'=>array_map('intval',$db->query('SELECT ativo FROM usuarios_portais WHERE id_usuario=2 ORDER BY id_portal')->fetchAll(PDO::FETCH_COLUMN))]);}
+elseif(($argv[1]??'')==='fixture'){
+ $db->exec("USE `$name`");$db->exec('UPDATE portais SET limite_anuncios=1 WHERE id=1');$db->exec("INSERT INTO usuarios(id,nome,email,senha_hash,perfil) VALUES(2,'Gestor','gestor@example.test','hash-test-only','manager')");$db->exec('INSERT INTO usuarios_portais(id_usuario,id_portal) VALUES(2,1)');
+ foreach([1,2] as $id){$db->exec("INSERT INTO anunciantes(id,nome) VALUES($id,'Empresa $id')");$db->exec("INSERT INTO anuncios(id,id_portal,id_anunciante,nome,categoria,servico_principal,descricao,modalidade_atendimento,horario,servicos,situacao) VALUES($id,1,$id,'Empresa $id','reformas','Reparo','Teste','Em estabelecimento','8h','[]','published')");}
+ $db->exec("INSERT INTO cobrancas(id,id_portal,id_anuncio,descricao,valor_centavos,vencimento) VALUES(1,1,1,'Teste',1000,'2030-01-01')");
+ foreach([1,2] as $id){$token=str_repeat((string)$id,64);$stmt=$db->prepare('INSERT INTO convites_avaliacao(id,id_anuncio,id_solicitante,email_destinatario,identificador_email,token_hash,expira_em) VALUES(?,1,1,?,?,?,?)');$stmt->execute([$id,'cliente@example.test',str_repeat('a',64),hash('sha256',$token),gmdate('Y-m-d H:i:s',time()+3600)]);}
+}
+elseif(($argv[1]??'')==='concurrency-check'){$db->exec("USE `$name`");echo json_encode(['ocupados'=>(int)$db->query('SELECT COUNT(*) FROM anuncios WHERE acesso_liberado_em IS NOT NULL')->fetchColumn(),'pagamentos'=>(int)$db->query('SELECT COUNT(*) FROM pagamentos')->fetchColumn(),'avaliacoes'=>(int)$db->query('SELECT COUNT(*) FROM avaliacoes')->fetchColumn()]);}
+elseif(($argv[1]??'')==='enqueue'){$db->exec("USE `$name`");$db->exec("INSERT INTO fila_emails(destinatario,assunto,mensagem) VALUES('cliente@example.test','Convite de teste','Mensagem de teste local sem destinatário real.')");}
+elseif(($argv[1]??'')==='smtp-config'){$port=(int)($argv[3]??0);if($port<1||$port>65535)throw new RuntimeException('Porta inválida.');$db->exec("USE `$name`");$q=$db->prepare("INSERT INTO configuracoes_email(id,servidor,porta,seguranca,usuario,remetente_email,remetente_nome,ativo) VALUES(1,'127.0.0.1',?,'nenhuma','','portal@example.test','Portal teste',1)");$q->execute([$port]);}
+elseif(($argv[1]??'')==='queue'){$db->exec("USE `$name`");echo json_encode($db->query('SELECT situacao,mensagem,tentativas FROM fila_emails')->fetchAll(PDO::FETCH_ASSOC));}
+elseif(($argv[1]??'')==='inspect'){$db->exec("USE `$name`");echo json_encode(['usuarios'=>(int)$db->query('SELECT COUNT(*) FROM usuarios')->fetchColumn(),'anuncios'=>(int)$db->query('SELECT COUNT(*) FROM anuncios')->fetchColumn()]);}else throw new RuntimeException('Ação inválida.');

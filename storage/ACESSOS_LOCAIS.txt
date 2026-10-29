@@ -1,0 +1,15 @@
+ACESSOS LOCAIS — PORTAL DO BAIRRO
+Contas de desenvolvimento. Não utilizar estas contas em produção.
+
+Master — http://localhost:8080/admin
+E-mail: master@portal.local
+Senha: c6ff246f0ee0268eecec11c9
+
+Gestor — http://localhost:8080/gestor
+E-mail: gestor@portal.local
+Senha: cbc863ee885fc02a49551bb6
+
+Anunciante — http://localhost:8080/anunciantes
+E-mail: anunciante@portal.local
+Senha: 6c2e147325f69dd33ba94279
+
